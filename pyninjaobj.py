@@ -275,7 +275,7 @@ if __name__ == '__main__':
     parser.add_argument("rip_path", help="path to the folder containing rip files")
 
     # parser.add_argument("-o","--output", nargs=1, help="output path and name (not including)")
-    # parser.add_argument("--tga", help="look for tga textures", action='store_true')
+    parser.add_argument("--tga", help="look for tga textures", action='store_true')
 
     args = parser.parse_args()
 
