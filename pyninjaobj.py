@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from collections import namedtuple
+from pprint import pprint
 import struct
 import array
 
@@ -189,7 +190,7 @@ class RipMesh():
         print("Finished reading mesh file")
         rip.close()
 
-def riptoobj(ripfiles, outdir, tga=False, name="convert"):
+def riptoobj(ripfiles, outdir, tga=False, name="convert", exists=False):
     meshes = []
     for ripfile in ripfiles:
         meshes.append(RipMesh(ripfile))
@@ -203,7 +204,13 @@ def riptoobj(ripfiles, outdir, tga=False, name="convert"):
         for tex in mesh.texture_files:
             if tga:
                 tex = tex[:-4] + ".tga" # .dds to .tga
+
+            if exists and not os.path.isfile(os.path.join(outdir, tex)):
+                # print("Ignoring nonexistant", tex)
+                continue
             texset.add(tex)
+
+    pprint(texset)
 
     objlines = []
     mtllines = []
@@ -227,6 +234,9 @@ def riptoobj(ripfiles, outdir, tga=False, name="convert"):
             for tex in mesh.texture_files:
                 if tga:
                     tex = tex[:-4] + ".tga"
+
+                if exists and not os.path.isfile(os.path.join(outdir, tex)):
+                    continue # ignore nonexistant materials if specified
                 objlines.append("usemtl " + tex)
 
             for v in mesh.vertices:
@@ -276,6 +286,8 @@ if __name__ == '__main__':
 
     # parser.add_argument("-o","--output", nargs=1, help="output path and name (not including)")
     parser.add_argument("--tga", help="look for tga textures", action='store_true')
+    parser.add_argument("--exists", "-e", help="only include materials for which their texture files exist", action='store_true')
+    # parser.add_argument("--whitelist_suffix", "-w", help="only include material's with these suffixes", nargs="+")
 
     args = parser.parse_args()
 
@@ -289,4 +301,4 @@ if __name__ == '__main__':
         if f.endswith(".rip"):
             paths.append(indir+os.path.sep+f)
 
-    riptoobj(paths, out, tga=args.tga)
+    riptoobj(paths, out, tga=args.tga, exists=args.exists)
