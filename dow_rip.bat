@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-python pyninjaobj.py %1 --exists --tga
+python pyninjaobj.py --exists --tga %1
 PAUSE
